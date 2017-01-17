@@ -37,7 +37,7 @@
 For the next exercise ("How's the weather?"), make sure to use your `requestJson` module instead of using the regular `request` module. As you do this, you may notice that your `requestJson` function stopped working since you put it in a separate file. Find out how and fix it :)
 
 ### How's the weather?
-  * Go to [Forecast.io API](https://developer.forecast.io/) and read the documentation
+  * Go to [Dark Sky API](https://darksky.net/dev/) and read the documentation
   * Get yourself a free API key
   * Remember the Google Geocoding API from yesterday's workshop
   * Using both APIs, complete the following workflow:
