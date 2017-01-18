@@ -21,6 +21,13 @@ var myURL = "https://maps.googleapis.com/maps/api/geocode/json?address=";
 
 var request = require('request');
 var prompt = require('prompt');
+var colors = require('colors');
+var Table = require('cli-table');
+var emoji = require('node-emoji');
+
+function toCelsius(tempInF) {
+     return (tempInF - 32) * 5 / 9;
+}
 
 var askLocation = function() {
     prompt.get(['city'], function(err, result) {
@@ -41,16 +48,47 @@ var askLocation = function() {
                     console.log("latitude:", latitude, " longitude:", longitude);
                     
                     var darkSkyURL = darkSky + latitude + "," + longitude;
+                    
                     requestJson(darkSkyURL, function(err, response) {
                         if(err) {
                             console.log("we have a problem here");
                         }
                         else {
-                            var darkSkyAccess = response.daily;
+                            // var darkSkyAccess = response.daily;
+                            console.log("Input '1' if you would like to see the weather for today.  Input '2' if you would like to see weather for the next 5 days.");
                             
-                            darkSkyAccess.data.forEach(function(day, i){
-                            console.log("Day "+(i+1)+ " Highs of "+ day.temperatureMax + 
-                            " Lows of "+ day.temperatureMin + " With chances of " + day.precipType);
+                            prompt.get(['input'], function(err, result){
+                                if (err) {
+                                    console.log("An error has occured here.")
+                                }
+                                else {
+                                    if (parseInt(result.input) === 1) {
+                                        console.log("\nTODAY'S WEATHER:".bold);
+                                        console.log(Date(parseInt(response.currently.time)).green);
+                                        console.log((response.currently.summary).underline.yellow);
+                                    }
+                                    else {
+                                        var fiveDay = new Table({
+                                            head: ["", "TODAY", "DAY 2", "DAY 3", "DAY 4", "DAY 5"],
+                                            colWidths: [50, 30, 30, 30, 30, 30]
+                                        });
+                                        
+                                        var description = ["Description: "];
+                                        var icon = ["Weather: "];
+                                        var minTemp = ["Minimum Temperature (\x80C): "];
+                                        var maxTemp = ["Maximum Temperature (\x80C): "];
+                                        
+                                        for (var i = 0; i < 5; i++) {
+                                            description.push(response.daily.data[i].summary);
+                                            icon.push(response.daily.data[i].icon);
+                                            minTemp.push(toCelsius(parseFloat(response.daily.data[i].temperatureMin)).toFixed(2));
+                                            maxTemp.push(toCelsius(parseFloat(response.daily.data[i].temperatureMax)).toFixed(2));
+                                        }
+                                        
+                                        fiveDay.push(description, icon, minTemp, maxTemp);
+                                        console.log(fiveDay.toString());
+                                    }
+                                }
                             });
                         }
                     });
@@ -65,6 +103,11 @@ askLocation();
 
 
 
+
+//                             // darkSkyAccess.data.forEach(function(day, i){
+//                             // console.log("Day "+(i+1)+ " Highs of "+ day.temperatureMax + 
+//                             // " Lows of "+ day.temperatureMin + " With chances of " + day.precipType);
+//                             // });
 
 
 
